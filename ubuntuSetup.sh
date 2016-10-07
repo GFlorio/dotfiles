@@ -1,6 +1,3 @@
-#!/bin/bash
-
-
 ##########################
 ##   ADICIONANDO PPAs   ##
 ##########################
@@ -27,7 +24,6 @@ pacotes=(
     python3-dev
     python3-pip
     redshift-gtk
-    skype
     spotify-client
     sqliteman
     steam
@@ -61,5 +57,6 @@ sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/i
 curl -o - https://raw.githubusercontent.com/denysdovhan/spaceship-zsh-theme/master/install.sh | zsh
 
 # Copiando os dotfiles
-cp -rsT $(pwd)/files $HOME
+git clone https://github.com/GFlorio/dotfiles.git
+cp -rsT $(pwd)/dotfiles/files $HOME
 
