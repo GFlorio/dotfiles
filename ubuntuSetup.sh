@@ -1,7 +1,7 @@
-##########################
-##   ADICIONANDO PPAs   ##
-##########################
-# Temas ARC
+#####################
+##   ADDING PPAs   ##
+#####################
+# ARC Themes
 sudo add-apt-repository -y ppa:noobslab/themes
 
 # Spotify
@@ -9,11 +9,11 @@ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB31
 echo deb http://repository.spotify.com testing non-free | sudo tee /etc/apt/sources.list.d/spotify.list
 
 
-##############################
-##   INSTALANDO PROGRAMAS   ##
-##############################
+#############################
+##   INSTALLING PROGRAMS   ##
+#############################
 sudo apt-get update
-
+sudo apt-get -yq upgrade
 
 pacotes=( 
     arc-theme
@@ -37,7 +37,7 @@ pacotes=(
 
 for pkg in "${pacotes[@]}"
 do
-    sudo apt-get -qq install $pkg
+    sudo apt-get -yq install $pkg
 done
 
 # Google Chrome
@@ -53,10 +53,10 @@ rm linux
 # Oh My Zsh
 sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
-# Tema Spaceship do Oh My Zsh
+# Spaceship Theme for Oh My Zsh
 curl -o - https://raw.githubusercontent.com/denysdovhan/spaceship-zsh-theme/master/install.sh | zsh
 
-# Copiando os dotfiles
+# Copying dotfiles over
 git clone https://github.com/GFlorio/dotfiles.git
 cp -rsT $(pwd)/dotfiles/files $HOME
 
