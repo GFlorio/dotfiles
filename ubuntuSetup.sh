@@ -54,6 +54,9 @@ wget https://tdesktop.com/linux
 tar -xvf linux
 rm linux
 
+# Change default shell
+chsh -s $(which zsh)
+
 # Oh My Zsh
 sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
@@ -62,5 +65,5 @@ curl -o - https://raw.githubusercontent.com/denysdovhan/spaceship-zsh-theme/mast
 
 # Copying dotfiles over
 git clone https://github.com/GFlorio/dotfiles.git
-cp -rsT $(pwd)/dotfiles/files $HOME
+cp -rfsT $(pwd)/dotfiles/files $HOME
 
