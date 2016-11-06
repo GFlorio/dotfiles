@@ -1,0 +1,11 @@
+[Desktop Entry]
+Exec=syncthing --no-browser
+Name=Syncthing
+StartupNotify=true
+Categories=Utility;
+Hidden=false
+Type=Application
+Version=1.0
+Terminal=false
+GenericName=Syncthing
+
