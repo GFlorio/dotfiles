@@ -67,3 +67,6 @@ curl -o - https://raw.githubusercontent.com/denysdovhan/spaceship-zsh-theme/mast
 git clone https://github.com/GFlorio/dotfiles.git $HOME/.dotfiles
 cp -rfsT $HOME/.dotfiles/files $HOME
 
+# Creating Vim dirs
+mkdir -p $HOME/.vim/backups
+mkdir -p $HOME/.vim/swap
