@@ -64,6 +64,6 @@ sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/i
 curl -o - https://raw.githubusercontent.com/denysdovhan/spaceship-zsh-theme/master/install.sh | zsh
 
 # Copying dotfiles over
-git clone https://github.com/GFlorio/dotfiles.git
-cp -rfsT $(pwd)/dotfiles/files $HOME
+git clone https://github.com/GFlorio/dotfiles.git $HOME/.dotfiles
+cp -rfsT $HOME/.dotfiles/files $HOME
 
