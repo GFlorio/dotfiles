@@ -36,7 +36,7 @@ plugins=(git django)
 
 # User configuration
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/gabriel/.local/bin"
-export PATH=$PATH:/home/gabriel/Android/Sdk/tools
+export PATH=$PATH:/home/gabriel/Android/Sdk/tools:/home/gabriel/Android/Sdk/platform-tools
 
 source $ZSH/oh-my-zsh.sh
 

@@ -17,7 +17,7 @@ set directory=~/.vim/swaps      " Set directory for swap files.
 set encoding=utf-8              " Use UTF-8.
 set lazyredraw                  " Avoid drawing the screen when not necessary.
 set ignorecase                  " Ignore case in search patterns.
-
+set clipboard=unnamedplus
 
 " ### INDENTATION ###
 filetype indent on              " Load filetype-specific indent files.

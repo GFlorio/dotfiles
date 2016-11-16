@@ -33,7 +33,7 @@ pacotes=(
     steam
     syncthing
     unity-tweak-tool
-    vim
+    vim-gtk3
     virtualbox
     xboxdrv
     zsh
