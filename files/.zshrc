@@ -38,6 +38,8 @@ plugins=(git django)
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/gabriel/.local/bin"
 export PATH=$PATH:/home/gabriel/Android/Sdk/tools:/home/gabriel/Android/Sdk/platform-tools
 
+export NPM_CONFIG_PREFIX=/home/gabriel/.npm-global
+
 source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
@@ -53,3 +55,5 @@ source $ZSH/oh-my-zsh.sh
 # ssh
 export SSH_KEY_PATH="~/.ssh/id_rsa"
 export ANDROID_HOME="/home/gabriel/Android/Sdk"
+
+alias vact='. venv/bin/activate'
