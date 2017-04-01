@@ -1,0 +1,12 @@
+#!/bin/bash
+
+killall xboxdrv
+
+if [ "$1" = "alt" ]; then
+  echo "Configurando controle com a configuracao alternativa!"
+  xboxdrv --detach-kernel-driver --silent -D --detach --buttonmap 1=3,3=1,2=4,4=2,rt=start,lt=back,start=rt,back=lt --ui-buttonmap guide=KEY_LEFTSHIFT+KEY_TAB,rt=KEY_END,lt=KEY_G --dbus disabled
+else
+  echo "Configurando controle para uso generico!"
+  xboxdrv --detach-kernel-driver --silent -D --force-feedback --detach --dbus disabled --mimic-xpad
+fi
+
