@@ -2,7 +2,6 @@
 ##   APLICATIVOS DE SESSAO   ##
 ###############################
 exec redshift
-exec dropbox
 exec thunar --daemon
 exec lxpolkit
 
@@ -31,7 +30,6 @@ assign [class="Thunar"] $wspc3
 assign [class="File-roller"] $wspc3
 assign [class="jetbrains-pycharm-ce"] $wspc4
 assign [class="Telegram"] $wspc8
-assign [class="Nylas N1"] $wspc9
 assign [class="Thunderbird"] $wspc9
 assign [class="Spotify"] $wspc10
 assign [class="google-chrome"] $wspc10
