@@ -25,6 +25,7 @@ pacotes=(
     gimp
     git
     htop
+    pandoc
     python3-dev
     python3-pip
     redshift-gtk
@@ -32,6 +33,8 @@ pacotes=(
     sqliteman
     steam
     syncthing
+    texlive
+    texlive-latex-extra
     unity-tweak-tool
     vim-gtk3
     virtualbox
