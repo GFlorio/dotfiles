@@ -33,8 +33,9 @@ pacotes=(
     sqliteman
     steam
     syncthing
-    texlive
+    texlive-full
     texlive-latex-extra
+    texstudio
     unity-tweak-tool
     vim-gtk3
     virtualbox
