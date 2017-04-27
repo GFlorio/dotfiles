@@ -1,3 +1,6 @@
+# Start tmux session
+[ -z "$TMUX"  ] && { tmux attach || exec tmux new-session && exit;}
+
 # Path to your oh-my-zsh installation.
   export ZSH=$HOME/.oh-my-zsh
 
