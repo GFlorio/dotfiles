@@ -28,6 +28,7 @@ pacotes=(
     pandoc
     python3-dev
     python3-pip
+    ranger
     redshift-gtk
     spotify-client
     sqliteman
@@ -36,6 +37,7 @@ pacotes=(
     texlive-full
     texlive-latex-extra
     texstudio
+    tmux
     unity-tweak-tool
     vim-gtk3
     virtualbox

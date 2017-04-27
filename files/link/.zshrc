@@ -1,5 +1,8 @@
+# Start tmux session
+[ -z "$TMUX"  ] && { tmux attach || exec tmux new-session && exit;}
+
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/gabriel/.oh-my-zsh
+export ZSH=/home/gabriel/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
