@@ -8,6 +8,12 @@ set hlsearch                    " Enable search highlighting.
 set incsearch                   " Search as characters are entered.
 set showmatch                   " Highlight matching [{()}].
 
+" ### SPELL_CHECK ###
+set spelllang=pt,en
+set spell
+highlight clear SpellBad
+highlight SpellBad term=reverse cterm=underline
+
 " ### WINDOWS ###
 set splitbelow                  " New hsplits are below
 set splitright                  " New vsplits are right
