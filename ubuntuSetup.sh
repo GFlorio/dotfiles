@@ -21,11 +21,13 @@ sudo apt-get -yq upgrade
 pacotes=( 
     arc-theme
     build-essential
+    cmake
     default-jdk
     gimp
     git
     htop
     pandoc
+    python-dev
     python3-dev
     python3-pip
     ranger
@@ -81,3 +83,11 @@ cp -rfT $HOME/.dotfiles/files/copy $HOME
 # Creating Vim dirs
 mkdir -p $HOME/.vim/backups
 mkdir -p $HOME/.vim/swap
+
+# Installing vim plugins...
+vim -E -c PlugInstall -c q
+
+# And compiling YouCompleteMe with basic c-like and Python support
+cd ~/.vim/plugged/youcompleteme
+./install.py --clang-completer
+cd --
