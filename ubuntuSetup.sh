@@ -69,6 +69,10 @@ sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/i
 # Spaceship Theme for Oh My Zsh
 curl -o - https://raw.githubusercontent.com/denysdovhan/spaceship-zsh-theme/master/install.sh | zsh
 
+# Vim-plug
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
 # Copying dotfiles over
 git clone https://github.com/GFlorio/dotfiles.git $HOME/.dotfiles
 cp -rfsT $HOME/.dotfiles/files/link $HOME
