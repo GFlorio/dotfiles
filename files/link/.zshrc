@@ -38,10 +38,10 @@ HIST_STAMPS="dd/mm/yyyy"
 plugins=(git django)
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/gabriel/.local/bin:/home/gabriel/.bin"
-export PATH=$PATH:/home/gabriel/Android/Sdk/tools:/home/gabriel/Android/Sdk/platform-tools
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$HOME/.local/bin:$HOME/.bin"
+export PATH=$PATH:$HOME/Android/Sdk/tools:$HOME/Android/Sdk/platform-tools
 
-export NPM_CONFIG_PREFIX=/home/gabriel/.npm-global
+export NPM_CONFIG_PREFIX=$HOME/.npm-global
 
 source $ZSH/oh-my-zsh.sh
 
@@ -57,6 +57,6 @@ source $ZSH/oh-my-zsh.sh
 
 # ssh
 export SSH_KEY_PATH="~/.ssh/id_rsa"
-export ANDROID_HOME="/home/gabriel/Android/Sdk"
+export ANDROID_HOME="$HOME/Android/Sdk"
 
 alias vact='. venv/bin/activate'
