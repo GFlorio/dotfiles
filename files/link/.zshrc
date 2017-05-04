@@ -45,18 +45,9 @@ export NPM_CONFIG_PREFIX=$HOME/.npm-global
 
 source $ZSH/oh-my-zsh.sh
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
 # ssh
 export SSH_KEY_PATH="~/.ssh/id_rsa"
 export ANDROID_HOME="$HOME/Android/Sdk"
 
 alias vact='. venv/bin/activate'
+alias upkey='ssh-copy-id -i ~/.ssh/id_rsa.pub'

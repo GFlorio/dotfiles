@@ -37,7 +37,7 @@ nnoremap <C-Left> <C-w>h<C-w>_
 nnoremap <C-Down> <C-w>j<C-w>_
 nnoremap <C-Up> <C-w>k<C-w>_
 nnoremap <C-Right> <C-w>l<C-w>_
-set wmh=0                       " Minimum window height
+set wmh=1                       " Minimum window height
 set wh=9999                     " Default window height
 
 " ### INNER WORKINGS ###
@@ -73,10 +73,14 @@ let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standar
 let g:ctrlp_open_new_file = 'h'
 " Open file in hsplit when <Enter> is pressed
 let g:ctrlp_prompt_mappings = {
-    \ 'AcceptSelection("e")': ['<c-h>', '<2-LeftMouse>'],
-    \ 'AcceptSelection("h")': ['<cr>', '<RightMouse>'],
+    \ 'AcceptSelection("h")': ['<c-h>', '<2-LeftMouse>'],
+    \ 'AcceptSelection("e")': ['<cr>', '<RightMouse>'],
     \ }
 
 " # youcompleteme
 " Use virtualenv
 let g:ycm_python_binary_path = 'python'
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_goto_buffer_command = 'vertical-split'
+nnoremap <leader>gg :YcmCompleter GoTo<CR>
+nnoremap <leader>gd :YcmCompleter GetDoc<CR>
