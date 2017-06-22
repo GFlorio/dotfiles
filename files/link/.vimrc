@@ -4,6 +4,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
 Plug 'valloric/youcompleteme'
 Plug 'vim-syntastic/syntastic'
+Plug 'tpope/tpope-vim-abolish'
 call plug#end()
 
 " ### LOOKS ###
@@ -39,7 +40,6 @@ nnoremap <C-Down> <C-w>j<C-w>_
 nnoremap <C-Up> <C-w>k<C-w>_
 nnoremap <C-Right> <C-w>l<C-w>_
 set wmh=1                       " Minimum window height
-set wh=9999                     " Default window height
 
 " ### INNER WORKINGS ###
 set backup
@@ -66,6 +66,18 @@ set foldlevel=99
 nnoremap <leader><space> :nohlsearch<CR> " Clear search highlights
 nnoremap <space> za                      " Use space for folding
 
+" Highlight current word
+set updatetime=100
+function! HighlightWordUnderCursor()
+    if getline(".")[col(".")-1] !~# '[[:punct:][:blank:]]' 
+        exec 'match' 'SpellRare' '/\V\<'.expand('<cword>').'\>/' 
+    else 
+        match none 
+    endif
+endfunction
+
+autocmd! CursorHold,CursorHoldI * call HighlightWordUnderCursor()
+
 " ### PLUGIN CONFIGS ###
 " # ctrlp
 " Ignore files ignored by git
@@ -82,7 +94,7 @@ let g:ctrlp_prompt_mappings = {
 " Use virtualenv
 let g:ycm_python_binary_path = 'python'
 let g:ycm_autoclose_preview_window_after_insertion = 1
-let g:ycm_goto_buffer_command = 'vertical-split'
+let g:ycm_goto_buffer_command = 'horizontal-split'
 nnoremap <leader>gg :YcmCompleter GoTo<CR>
 nnoremap <leader>gd :YcmCompleter GetDoc<CR>
 
@@ -92,7 +104,7 @@ set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
 let g:syntastic_python_checkers = ['flake8', 'mypy']
-let g:syntastic_python_mypy_args = '--strict-optional --silent-imports'
+let g:syntastic_python_mypy_args = '--strict-optional --silent-imports --quick-and-dirty'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
