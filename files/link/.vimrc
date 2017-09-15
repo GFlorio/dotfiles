@@ -3,8 +3,7 @@ Plug 'altercation/vim-colors-solarized'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
 Plug 'valloric/youcompleteme'
-Plug 'vim-syntastic/syntastic'
-Plug 'tpope/tpope-vim-abolish'
+Plug 'w0rp/ale'
 call plug#end()
 
 " ### LOOKS ###
@@ -13,7 +12,7 @@ set cursorline                  " Highlight the current line.
 set number                      " Show line number.
 set relativenumber              " Show RELATIVE line numbers
 set wildmenu                    " Visual autocomplete for command menu.
-set hlsearch                    " Enable search highlighting.
+" set hlsearch                    " Enable search highlighting.
 set incsearch                   " Search as characters are entered.
 set showmatch                   " Highlight matching [{()}].
 set colorcolumn=80,120          " Highlight line length limits
@@ -31,14 +30,14 @@ highlight SpellBad term=reverse cterm=underline
 set splitbelow                  " New hsplits are below
 set splitright                  " New vsplits are right
 " Better window navigation
-nnoremap <C-h> <C-w>h<C-w>_
-nnoremap <C-j> <C-w>j<C-w>_
-nnoremap <C-k> <C-w>k<C-w>_
-nnoremap <C-l> <C-w>l<C-w>_
-nnoremap <C-Left> <C-w>h<C-w>_
-nnoremap <C-Down> <C-w>j<C-w>_
-nnoremap <C-Up> <C-w>k<C-w>_
-nnoremap <C-Right> <C-w>l<C-w>_
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nnoremap <C-Left> <C-w>h
+nnoremap <C-Down> <C-w>j
+nnoremap <C-Up> <C-w>k
+nnoremap <C-Right> <C-w>l
 set wmh=1                       " Minimum window height
 
 " ### INNER WORKINGS ###
@@ -63,8 +62,8 @@ set foldmethod=indent
 set foldlevel=99
 
 " ### CUSTOM BINDINGS ###
+let mapleader = " "
 nnoremap <leader><space> :nohlsearch<CR> " Clear search highlights
-nnoremap <space> za                      " Use space for folding
 
 " Highlight current word
 set updatetime=100
@@ -95,18 +94,13 @@ let g:ctrlp_prompt_mappings = {
 let g:ycm_python_binary_path = 'python'
 let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_goto_buffer_command = 'horizontal-split'
-nnoremap <leader>gg :YcmCompleter GoTo<CR>
-nnoremap <leader>gd :YcmCompleter GetDoc<CR>
+nnoremap <leader>g :YcmCompleter GetDoc<CR>
 
-" # syntastic
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_python_checkers = ['flake8', 'mypy']
-let g:syntastic_python_mypy_args = '--strict-optional --silent-imports --quick-and-dirty'
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_auto_jump = 3
+" # ALE
+let g:ale_python_mypy_options = '--strict-optional --silent-imports'
+let g:ale_open_list = 1
+let g:ale_lint_delay = 300
+let g:ale_lint_on_text_changed = 'normal'
+let g:ale_lint_on_insert_leave = 1
+nmap <leader>k <Plug>(ale_previous_wrap)
+nmap <leader>j <Plug>(ale_next_wrap)

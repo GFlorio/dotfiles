@@ -49,5 +49,5 @@ source $ZSH/oh-my-zsh.sh
 export SSH_KEY_PATH="~/.ssh/id_rsa"
 export ANDROID_HOME="$HOME/Android/Sdk"
 
-alias vact='. venv/bin/activate'
+alias vact='. ~/.venvs/${PWD##*/}/bin/activate'
 alias upkey='ssh-copy-id -i ~/.ssh/id_rsa.pub'
