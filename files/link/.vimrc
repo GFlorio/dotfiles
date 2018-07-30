@@ -9,8 +9,8 @@ call plug#end()
 " ### LOOKS ###
 syntax on                       " Enable syntax highlighting.
 set cursorline                  " Highlight the current line.
-set number                      " Show line number.
-set relativenumber              " Show RELATIVE line numbers
+"set number                      " Show line number.
+"set relativenumber              " Show RELATIVE line numbers
 set wildmenu                    " Visual autocomplete for command menu.
 " set hlsearch                    " Enable search highlighting.
 set incsearch                   " Search as characters are entered.
@@ -58,12 +58,14 @@ set autoindent                  " Copy indent to the new line.
 set expandtab                   " Tabs are spaces.
 set tabstop=4                   " Number of visual spaces per TAB.
 set softtabstop=4               " Number of spaces in tab when editing.
+set shiftwidth=4
 set foldmethod=indent
 set foldlevel=99
 
 " ### CUSTOM BINDINGS ###
-let mapleader = " "
+let mapleader = '\'
 nnoremap <leader><space> :nohlsearch<CR> " Clear search highlights
+nnoremap <leader>w  vipgq " Reflow paragraph
 
 " Highlight current word
 set updatetime=100

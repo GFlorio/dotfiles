@@ -1,12 +1,9 @@
 #####################
 ##   ADDING PPAs   ##
 #####################
-# ARC Themes
-sudo add-apt-repository -y ppa:noobslab/themes
-
 # Spotify
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886
-echo deb http://repository.spotify.com testing non-free | sudo tee /etc/apt/sources.list.d/spotify.list
+#sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886
+#echo deb http://repository.spotify.com testing non-free | sudo tee /etc/apt/sources.list.d/spotify.list
 
 # Syncthing
 curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
@@ -19,11 +16,11 @@ sudo apt-get update
 sudo apt-get -yq upgrade
 
 pacotes=( 
-    arc-theme
     build-essential
     cmake
+    curl
     default-jdk
-    gimp
+    #gimp
     git
     htop
     pandoc
@@ -31,19 +28,19 @@ pacotes=(
     python3-dev
     python3-pip
     ranger
-    redshift-gtk
-    spotify-client
+    #redshift-gtk
+    #spotify-client
     sqliteman
     steam
     syncthing
-    texlive-full
-    texlive-latex-extra
-    texstudio
+    #texlive-full
+    #texlive-latex-extra
+    #texstudio
     tmux
-    unity-tweak-tool
-    vim-gtk3
+    #vim-gtk3
     virtualbox
-    xboxdrv
+    #xboxdrv
+    xclip
     zsh
 )
 
@@ -76,9 +73,9 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # Copying dotfiles over
-git clone https://github.com/GFlorio/dotfiles.git $HOME/.dotfiles
-cp -rfsT $HOME/.dotfiles/files/link $HOME
-cp -rfT $HOME/.dotfiles/files/copy $HOME
+#git clone https://github.com/GFlorio/dotfiles.git $HOME/.dotfiles
+#cp -rfsT $HOME/.dotfiles/files/link $HOME
+#cp -rfT $HOME/.dotfiles/files/copy $HOME
 
 # Creating Vim dirs
 mkdir -p $HOME/.vim/backups
