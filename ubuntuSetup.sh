@@ -1,9 +1,6 @@
 #####################
 ##   ADDING PPAs   ##
 #####################
-# Spotify
-#sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886
-#echo deb http://repository.spotify.com testing non-free | sudo tee /etc/apt/sources.list.d/spotify.list
 
 # Syncthing
 curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
@@ -35,9 +32,8 @@ pacotes=(
     syncthing
     #texlive-full
     #texlive-latex-extra
-    #texstudio
     tmux
-    #vim-gtk3
+    vim-gtk3
     virtualbox
     #xboxdrv
     xclip
@@ -74,7 +70,7 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 
 # Copying dotfiles over
 #git clone https://github.com/GFlorio/dotfiles.git $HOME/.dotfiles
-#cp -rfsT $HOME/.dotfiles/files/link $HOME
+cp -rfsT $HOME/.dotfiles/files/link $HOME
 #cp -rfT $HOME/.dotfiles/files/copy $HOME
 
 # Creating Vim dirs

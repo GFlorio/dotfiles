@@ -4,13 +4,14 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
 Plug 'valloric/youcompleteme'
 Plug 'w0rp/ale'
+Plug 'airblade/vim-gitgutter'
 call plug#end()
 
 " ### LOOKS ###
 syntax on                       " Enable syntax highlighting.
 set cursorline                  " Highlight the current line.
-"set number                      " Show line number.
-"set relativenumber              " Show RELATIVE line numbers
+set number                      " Show line number.
+set relativenumber              " Show RELATIVE line numbers
 set wildmenu                    " Visual autocomplete for command menu.
 " set hlsearch                    " Enable search highlighting.
 set incsearch                   " Search as characters are entered.
@@ -66,6 +67,7 @@ set foldlevel=99
 let mapleader = '\'
 nnoremap <leader><space> :nohlsearch<CR> " Clear search highlights
 nnoremap <leader>w  vipgq " Reflow paragraph
+nnoremap <leader>t :!python -m unittest %<CR> " Run tests in current file
 
 " Highlight current word
 set updatetime=100
@@ -96,13 +98,13 @@ let g:ctrlp_prompt_mappings = {
 let g:ycm_python_binary_path = 'python'
 let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_goto_buffer_command = 'horizontal-split'
-nnoremap <leader>g :YcmCompleter GetDoc<CR>
+nnoremap <leader>? :YcmCompleter GetDoc<CR>
 
 " # ALE
-let g:ale_python_mypy_options = '--strict-optional --silent-imports'
+let g:ale_python_mypy_options = '--strict-optional –-ignore-missing-imports'
 let g:ale_open_list = 1
 let g:ale_lint_delay = 300
 let g:ale_lint_on_text_changed = 'normal'
 let g:ale_lint_on_insert_leave = 1
-nmap <leader>k <Plug>(ale_previous_wrap)
-nmap <leader>j <Plug>(ale_next_wrap)
+nmap <leader>p <Plug>(ale_previous_wrap)
+nmap <leader>n <Plug>(ale_next_wrap)
