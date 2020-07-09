@@ -1,0 +1,31 @@
+# My aliases
+alias upkey='ssh-copy-id -i ~/.ssh/id_rsa.pub'
+alias cpy='xclip -selection clipboard'
+alias pst='xclip -o -selection clipboard'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+alias ga='git add --all'
+alias gca='git commit -a'
+alias gcam='git commit -a -m'
+alias gcm='git commit -m'
+alias gch='git checkout'
+alias gd='git diff'
+alias gpl='git pull'
+alias gpsh='git push'
+alias glog='git log --oneline --decorate --graph'
+alias gss='git status -s'
+
+alias cddep='cd $DEPLOY_ROOT'
+alias deploc='kubectl apply -f $DEPLOY_ROOT/location-server_deployment.yml'
+alias depalc='kubectl apply -f $DEPLOY_ROOT/alcatraz_deployment.yml && kubectl apply -f $DEPLOY_ROOT/alcatraz-worker_deployment.yml'
+alias depsm='kubectl apply -f $DEPLOY_ROOT/location-smoother_deployment.yml'
+alias depcon='kubectl apply -f $DEPLOY_ROOT/contact-tracing_deployment.yml'
+alias kgploc='kubectl get pods | grep location-'
+alias kgpalc='kubectl get pods | grep alcatraz-'
+
+
+alias clean_root='sudo journalctl --vacuum-time=10d && sudo apt clean && sudo apt autoclean'
+# keytool -printcert -jarfile launcher.apk | grep -Po "(?<=SHA256:) .*" | xxd -r -p | openssl base64 | tr -d '=' | tr -- '+/=' '-_'
