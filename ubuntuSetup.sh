@@ -24,10 +24,6 @@ pacotes=(
     python-dev
     python3-dev
     python3-pip
-    ranger
-    #redshift-gtk
-    #spotify-client
-    sqliteman
     steam
     syncthing
     #texlive-full

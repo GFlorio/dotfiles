@@ -1,5 +1,4 @@
 call plug#begin()
-Plug 'altercation/vim-colors-solarized'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'cohama/lexima.vim'
 Plug 'valloric/youcompleteme'
@@ -18,14 +17,17 @@ set incsearch                   " Search as characters are entered.
 set showmatch                   " Highlight matching [{()}].
 set colorcolumn=80,120          " Highlight line length limits
 set t_Co=256                    " Use 256 colors
-set background=dark             " Tell vim we're on a dark terminal
-colorscheme solarized 
+set background=light             " Tell vim we're on a dark terminal
+
+" Workaround for https://github.com/vim/vim/issues/3608
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+colorscheme breezy
+set termguicolors
 
 " ### SPELL_CHECK ###
-set spelllang=pt,en
+set spelllang=pt_br,en_us
 set spell
-highlight clear SpellBad
-highlight SpellBad term=reverse cterm=underline
 
 " ### WINDOWS ###
 set splitbelow                  " New hsplits are below
@@ -71,9 +73,10 @@ nnoremap <leader>t :!python -m unittest %<CR> " Run tests in current file
 
 " Highlight current word
 set updatetime=100
+hi CurrWord      cterm=bold,italic
 function! HighlightWordUnderCursor()
     if getline(".")[col(".")-1] !~# '[[:punct:][:blank:]]' 
-        exec 'match' 'SpellRare' '/\V\<'.expand('<cword>').'\>/' 
+        exec 'match' 'CurrWord' '/\V\<'.expand('<cword>').'\>/' 
     else 
         match none 
     endif
