@@ -1,64 +1,33 @@
-#####################
-##   ADDING PPAs   ##
-#####################
-
-# Syncthing
-curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
-echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing.list
-
 #############################
 ##   INSTALLING PROGRAMS   ##
 #############################
 sudo apt-get update
 sudo apt-get -yq upgrade
 
-pacotes=( 
+packages=( 
     build-essential
     cmake
     curl
     default-jdk
-    #gimp
     git
     htop
-    pandoc
     python-dev
     python3-dev
     python3-pip
-    steam
-    syncthing
-    #texlive-full
-    #texlive-latex-extra
     tmux
     vim-gtk3
-    virtualbox
-    #xboxdrv
     xclip
-    zsh
 )
 
-for pkg in "${pacotes[@]}"
+for pkg in "${packages[@]}"
 do
-    sudo apt-get -yq install $pkg
+    sudo apt -yq install $pkg
 done
 
-# Google Chrome
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo dpkg -i google-chrome-stable_current_amd64.deb
-rm google-chrome-stable_current_amd64.deb
-
-# Telegram
-wget https://tdesktop.com/linux
-tar -xvf linux
-rm linux
-
-# Change default shell
-chsh -s $(which zsh)
-
-# Oh My Zsh
-sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-
-# Spaceship Theme for Oh My Zsh
-curl -o - https://raw.githubusercontent.com/denysdovhan/spaceship-zsh-theme/master/install.sh | zsh
+snaps=(
+    chromium
+    telegram-desktop
+)
 
 # Vim-plug
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -67,7 +36,8 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 # Copying dotfiles over
 #git clone https://github.com/GFlorio/dotfiles.git $HOME/.dotfiles
 cp -rfsT $HOME/.dotfiles/files/link $HOME
-#cp -rfT $HOME/.dotfiles/files/copy $HOME
+cp -rfT $HOME/.dotfiles/files/copy $HOME
+wget -O $HOME/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
 
 # Creating Vim dirs
 mkdir -p $HOME/.vim/backups
