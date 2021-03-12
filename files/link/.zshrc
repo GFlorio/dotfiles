@@ -39,3 +39,6 @@ alias cpy='xclip'
 alias pst='xclip -o'
 alias restart-plasmashell='killall plasmashell; nohup plasmashell& disown'
 if [ /snap/bin/kubectl ]; then source <(kubectl completion zsh); fi
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /home/gabriel/.bin/terraform terraform

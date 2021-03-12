@@ -4,6 +4,10 @@ Plug 'cohama/lexima.vim'
 Plug 'valloric/youcompleteme'
 Plug 'w0rp/ale'
 Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-surround'
+Plug 'justinmk/vim-sneak'
+Plug 'vim-scripts/ReplaceWithRegister'
 call plug#end()
 
 " ### LOOKS ###
@@ -22,8 +26,8 @@ set background=light             " Tell vim we're on a dark terminal
 " Workaround for https://github.com/vim/vim/issues/3608
 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-colorscheme breezy
 set termguicolors
+colorscheme breezy
 
 " ### SPELL_CHECK ###
 set spelllang=pt_br,en_us

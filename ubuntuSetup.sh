@@ -5,15 +5,18 @@ sudo apt-get update
 sudo apt-get -yq upgrade
 
 packages=( 
+    autojump
     build-essential
     cmake
     curl
     default-jdk
+    fzf
     git
     htop
     python-dev
     python3-dev
     python3-pip
+    silversearcher-ag
     tmux
     vim-gtk3
     xclip
@@ -30,8 +33,8 @@ snaps=(
 )
 
 # Vim-plug
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # Copying dotfiles over
 #git clone https://github.com/GFlorio/dotfiles.git $HOME/.dotfiles
@@ -41,7 +44,7 @@ wget -O $HOME/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/co
 
 # Creating Vim dirs
 mkdir -p $HOME/.vim/backups
-mkdir -p $HOME/.vim/swap
+mkdir -p $HOME/.vim/swaps
 
 # Installing vim plugins...
 vim -E -c PlugInstall -c q

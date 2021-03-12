@@ -11,7 +11,7 @@ esac
 # Run tmux on start
 # [ -z "$TMUX"  ] && { tmux new-session -t 0 || exec tmux new-session && exit;}
 
-if [ /snap/bin/kubectl ]; then source <(kubectl completion bash); fi
+if [ -e /snap/bin/kubectl ]; then source <(kubectl completion bash); fi
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
@@ -48,7 +48,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -65,8 +65,8 @@ fi
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
 
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
@@ -77,9 +77,6 @@ fi
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -107,17 +104,31 @@ fi
 
 bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'
+bind '"\e[Z":menu-complete-backward'
 
 source ~/.git-prompt.sh
+source ~/.poetry_completions.sh
+
 export GIT_PS1_SHOWDIRTYSTATE=true      # staged '+', unstaged '*'
 export GIT_PS1_SHOWUNTRACKEDFILES=true  # '%' untracked files
 export GIT_PS1_SHOWUPSTREAM="auto"      # '<' behind, '>' ahead, '<>' diverged, '=' no difference
 export GIT_PS1_SHOWSTASHSTATE=true      # '$' something is stashed
 export GIT_PS1_SHOWCOLORHINTS=true
 export PROMPT_COMMAND='__git_ps1 "\n[\t] \[\e[1;37m\]\w\[\e[m\]" "\n> "'
-export KUBE_ROOT=/home/gabriel/work/arquitetura-kubernetes
-export DEPLOY_ROOT=$KUBE_ROOT/config/deployments
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if [ -d "$HOME/.bin" ] ; then
+    export PATH="$HOME/.bin:$PATH"
+fi
+
+NPM_PACKAGES="${HOME}/.npm-packages"
+if [ -d "$NPM_PACKAGES/bin" ] ; then
+    export PATH="$PATH:$NPM_PACKAGES/bin"
+    export MANPATH="${MANPATH-$(manpath)}:$NPM_PACKAGES/share/man"
+fi
+
+export PATH=~/.pyenv/bin:$PATH
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+source /usr/share/autojump/autojump.bash
+
+complete -C /home/gabriel/.bin/terraform terraform
