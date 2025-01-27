@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import json
 import os
 import re
 import sqlite3
@@ -100,7 +99,7 @@ def search(conn: sqlite3.Connection):
     selected_note = fzf_grep_ai(title_mapping)
     if selected_note:
         selected_index = selected_note.split(FZF_DELIMITER)[0]
-        note_file = DIR.joinpath(selected_index + EXT)
+        note_file = DIR.joinpath(selected_index)
         edit(note_file)
 
 
@@ -325,7 +324,7 @@ def edit(file: _PATH, cwd: _PATH|None = None):
     editor_name = os.getenv('EDITOR', 'vim')
     editor = which(editor_name)
     assert editor is not None, f"Invalid editor {editor_name}."
-    run([editor, file], cwd=cwd)
+    _run([editor, file], cwd=cwd)
 
 FZF_DELIMITER = ' \t '
 def _fzf():
@@ -360,17 +359,14 @@ def md_previewer_cmd(file: str):
 def fzf_grep_ai(title_mapping: dict[str, str]):
     grep = which('grep')
     assert grep is not None
-    
     with tempfile.NamedTemporaryFile('w', suffix='.json') as tmp:
-        json.dump(title_mapping, tmp)
+        tmp.writelines([f"{k}{FZF_DELIMITER}{v}\n" for k,v in title_mapping.items()])
         tmp.flush()
-        
-        # Modify grep command to include title lookup
+
         grep_cmd = f"""
         [[ -z {{q}} ]] || {grep} -i -I -H -n -I -l --color=never {{q}} {DIR}/*.md | 
         while IFS= read -r file; do
-            title=$(jq -r --arg f "$file" '.[$f]' {tmp.name})
-            echo "$file{FZF_DELIMITER}$title"
+            grep -o "$file .*" {tmp.name}
         done || :"""
         
         fzf_command = [
