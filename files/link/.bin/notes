@@ -1,0 +1,399 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import os
+import re
+import sqlite3
+import sys
+import tempfile
+from datetime import datetime
+from pathlib import Path
+from shutil import which
+from subprocess import run as _run
+from typing import Collection, Final, Iterable, NamedTuple, Sequence, TypeAlias
+
+parser = argparse.ArgumentParser('notes')
+parser.add_argument('command', choices=[
+    'new', 'n', 'c',
+    'tags', 't',
+    'search', 's',
+    'last', 'l',
+    'recover',
+])
+parser.add_argument('--dir', '-d')
+args = parser.parse_args()
+
+DIR: Final = Path(args.dir or (os.getenv('NOTESDIR', '~/notes'))).expanduser()
+DB: Final = os.path.join(DIR, '.index.db')
+EXT: Final = '.md'
+
+def _main():
+    db_exists = os.path.isfile(DB)
+    conn = sqlite3.connect(DB)
+    conn.execute("PRAGMA foreign_keys = ON")
+    conn.commit()
+    if not db_exists:
+        db_setup(conn)
+
+    if args.command in ['new', 'n', 'c']:
+        new_note()
+        update_db(conn)
+    elif args.command in ['tags', 't']:
+        update_db(conn)
+        search_by_tag(conn)
+    elif args.command in ['search', 's']:
+        update_db(conn)
+        search(conn)
+    elif args.command in ['last', 'l']:
+        update_db(conn)
+        open_last_note(conn)
+    conn.close()
+
+
+def open_last_note(conn: sqlite3.Connection):
+    last_note = conn.execute(
+        "SELECT index_id FROM notes ORDER BY last_modified DESC LIMIT 1"
+    ).fetchone()
+    if last_note:
+        note_file = DIR.joinpath(last_note[0] + EXT)
+        edit(note_file)
+    else:
+        print("No notes found.")
+
+
+def search_by_tag(conn: sqlite3.Connection):
+    tags = conn.execute("SELECT DISTINCT tag FROM note_tags").fetchall()
+    if not tags:
+        print("No tags found.")
+        return
+
+    selected_tag = fzf_simple([tag[0] for tag in tags], prompt="Select a tag: ")
+    if not selected_tag:
+        return
+
+    notes_with_tag = conn.execute(
+        "SELECT n.index_id, n.title FROM notes n "
+        "JOIN note_tags t ON n.index_id = t.note_id "
+        "WHERE t.tag = ?", (selected_tag,)
+    ).fetchall()
+    if not notes_with_tag:
+        print(f"No notes found with tag '{selected_tag}'.")
+        return
+
+    note_display = [f"{note[0]}{FZF_DELIMITER}{note[1]}" for note in notes_with_tag]
+
+    selected_note = fzf_preview(
+        note_display, prompt=f"Select a note with tag '{selected_tag}': ",
+    )
+    if selected_note:
+        selected_index = selected_note.split(FZF_DELIMITER)[0]
+        note_file = DIR.joinpath(selected_index + EXT)
+        edit(note_file)
+
+
+def search(conn: sqlite3.Connection):
+    title_mapping = {
+        DIR.joinpath(row[0]+EXT).as_posix(): row[1] for row in
+        conn.execute("SELECT index_id, title FROM notes").fetchall()
+    }
+    selected_note = fzf_grep_ai(title_mapping)
+    if selected_note:
+        selected_index = selected_note.split(FZF_DELIMITER)[0]
+        note_file = DIR.joinpath(selected_index + EXT)
+        edit(note_file)
+
+
+# #####################
+# #  CREATE NEW NOTE  #
+# #####################
+template = '''# '''
+
+def new_note() -> int:
+    next_flename = next_b63_name(get_b63_filenames(DIR), EXT)
+    next_index = os.path.splitext(next_flename)[0]
+    note_template = template+next_index+' '
+    with tempfile.NamedTemporaryFile(suffix=EXT, mode='w+') as tf:
+        tf.write(note_template)
+        tf.flush()
+        edit(tf.name)
+        tf.seek(0)
+        note_content = tf.read()
+    if len(note_content) <= len(note_template):
+        print("Empty note not saved.")
+        return 0
+    with open(os.path.join(DIR, next_flename), 'w') as f:
+        f.write(note_content)
+    return 0
+
+# #####################
+# #  BASE63 ENCODING  #
+# #####################
+b63_vals = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz'
+b63_regex = re.compile(r'[0-9A-Za-z_]+')
+b63_file_regex = re.compile(b63_regex.pattern+r'\.[0-9A-Za-z]+')
+
+def next_b63_name(existing_files: Iterable[str], ext:str):
+    try:
+        last = max(
+            b63_decode(os.path.splitext(f)[0]) for f in existing_files
+        )
+    except ValueError: # No files exist
+        last = 0
+    return f'{b63_encode(last+1)}{ext}'
+
+def get_b63_filenames(dir: Path):
+    return (
+        file for file in os.listdir(dir)
+        if is_b63_filename(file)
+    )
+
+def is_b63_filename(name: str):
+    return b63_file_regex.match(name)
+
+def b63_encode(x: int) -> str:
+    result = []
+    if x == 0:
+        return b63_vals[0]
+    while x > 0:
+        result.insert(0, b63_vals[x % len(b63_vals)])
+        x = x // len(b63_vals)
+    return ''.join(result)
+
+def b63_decode(x: str) -> int:
+    result = 0
+    for i, digit in enumerate(reversed(x)):
+        result += b63_vals.index(digit) * len(b63_vals)**i
+    return result
+
+
+# ######################
+# #   NOTES DATABASE   #
+# ######################
+
+class Note(NamedTuple):
+    index_id: str
+    title: str
+    content: str
+    tags: set[str]
+    links: set[str]
+    last_modified: int
+
+class NoteResult(NamedTuple):
+    index_id: str
+    title: str
+    content: str
+    last_modified: datetime
+    tags: list[str]
+    outgoing_links: list[str]
+    incoming_links: list[str]
+
+class SearchResult(NamedTuple):
+    index_id: str
+    title: str
+    last_modified: datetime
+    highlight: str = ''
+
+def db_setup(conn: sqlite3.Connection):
+    with conn:
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS notes (
+                index_id TEXT PRIMARY KEY NOT NULL,
+                title TEXT NULL,
+                content TEXT NOT NULL,
+                last_modified INTEGER NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS note_tags (
+                note_id TEXT,
+                tag TEXT NOT NULL COLLATE NOCASE,
+                PRIMARY KEY (note_id, tag),
+                FOREIGN KEY (note_id) REFERENCES notes(index_id)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
+            );
+            CREATE INDEX idx_note_tags_tag ON note_tags(tag);
+            CREATE TABLE IF NOT EXISTS note_links (
+                note_fro TEXT,
+                note_to TEXT,
+                PRIMARY KEY (note_fro, note_to),
+                FOREIGN KEY (note_fro) REFERENCES notes(index_id)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
+            );
+            CREATE INDEX idx_note_links_note_to ON note_links(note_to);
+            CREATE INDEX idx_note_links_compound ON note_links(note_fro, note_to);
+        """)
+
+tag_regex = re.compile(r' #([a-z]+)')
+link_regex = re.compile(rf'\[\[{b63_regex.pattern}\]\]')
+
+def parse_note(file_path: Path) -> Note:
+    content = file_path.read_text(encoding='utf-8')
+    index_id = file_path.name.removesuffix(EXT)
+
+    first_line = content.split('\n')[0]
+    match = re.match(rf'^# {index_id} (.+)$', first_line)
+    if match:
+        title = match.groups()[0]
+    else:
+        title = ""
+
+    tags = set(tag.lower() for tag in re.findall(tag_regex, content))
+    links = set(re.findall(link_regex, content))
+    last_modified = modified_time(file_path)
+
+    return Note(
+        index_id=index_id,
+        title=title,
+        content=content,
+        tags=tags,
+        links=links,
+        last_modified=last_modified
+    )
+
+def modified_time(file: Path):
+    return int(file.stat().st_mtime)
+
+def update_db(conn: sqlite3.Connection):
+    modified = {
+        row[0]: row[1] for row in
+        conn.execute("SELECT index_id, last_modified FROM notes").fetchall()
+    }
+    current_files: set[str] = set()
+    notes_with_changes: list[Note] = []
+    for note_file in DIR.glob('*'+EXT):
+        if not is_b63_filename(note_file.name):
+            continue
+        index = note_file.stem
+        current_files.add(index)
+        if index not in modified or modified[index] < modified_time(note_file):
+            notes_with_changes.append(parse_note(note_file))
+
+    with conn:
+        update_notes(conn, notes_with_changes)
+        deleted_files = [f for f in modified if f not in current_files]
+        handle_deleted_notes(conn, deleted_files)
+        # TODO handle broken links?
+
+def update_notes(conn: sqlite3.Connection, changed_notes: Iterable[Note]):
+    conn.executemany("""
+        INSERT OR REPLACE INTO notes (index_id, title, content, last_modified)
+        VALUES (?, ?, ?, ?)
+    """, [
+        (note.index_id, note.title, note.content, note.last_modified)
+        for note in changed_notes
+    ])
+    conn.executemany("DELETE FROM note_tags WHERE note_id = ?",
+                [(note.index_id,) for note in changed_notes])
+    conn.executemany("INSERT INTO note_tags (note_id, tag) VALUES (?, ?)",
+        [(note.index_id, tag) for note in changed_notes for tag in note.tags]
+    )
+    conn.executemany("DELETE FROM note_links WHERE note_fro = ?",
+                [(note.index_id,) for note in changed_notes])
+    conn.executemany("INSERT OR IGNORE INTO note_links (note_fro, note_to) VALUES (?, ?)",
+        [(note.index_id, link) for note in changed_notes for link in note.links]
+    )
+
+def handle_deleted_notes(conn: sqlite3.Connection, deleted_files: Collection[str]):
+    conn.executemany(
+        "DELETE FROM note_tags WHERE note_id = ?",
+        [f for f in deleted_files]
+    )
+    conn.executemany(
+        "DELETE FROM note_links WHERE note_fro = ?",
+        [f for f in deleted_files]
+    )
+    conn.executemany(
+        "DELETE FROM notes WHERE index_id = ?",
+        [f for f in deleted_files]
+    )
+
+def recover_note(conn: sqlite3.Connection, index: str):
+    note = conn.execute(
+        "SELECT content FROM notes n WHERE index_id = ?", (index,)
+    ).fetchone()
+    with open(DIR.joinpath(index+EXT), 'w') as f:
+        f.write(note[0])
+
+
+# #######################
+# #  OPEN SYSTEM UTILS  #
+# #######################
+_PATH: TypeAlias = str|Path
+
+def edit(file: _PATH, cwd: _PATH|None = None):
+    editor_name = os.getenv('EDITOR', 'vim')
+    editor = which(editor_name)
+    assert editor is not None, f"Invalid editor {editor_name}."
+    run([editor, file], cwd=cwd)
+
+FZF_DELIMITER = ' \t '
+def _fzf():
+    fzf = which('fzf')
+    assert fzf is not None, "Install https://github.com/junegunn/fzf."
+    return fzf
+
+def fzf_simple(options: list[str], prompt: str = ""):
+    cmd = [_fzf()]
+    if prompt:
+        cmd.extend(['--prompt', prompt])
+    result = run(cmd, "\n".join(options))
+    return result
+
+
+def fzf_preview(options: list[str], prompt: str = "") -> str:
+    command = [_fzf(), '--prompt', prompt]
+    command.extend(['--preview', md_previewer_cmd('{1}'+EXT)])
+    command.extend(['--preview-window', "bottom:80%"])
+    command.extend(['--delimiter', FZF_DELIMITER])
+    command.extend(['--with-nth', str(2)])
+    result = run(command, "\n".join(options))
+    return result
+
+def md_previewer_cmd(file: str):
+    if which("pygmentize"):
+        preview_command = f"pygmentize -O style=native -l markdown {file}"
+    else:
+        preview_command = f"cat {file}"
+    return preview_command
+
+def fzf_grep_ai(title_mapping: dict[str, str]):
+    grep = which('grep')
+    assert grep is not None
+    
+    with tempfile.NamedTemporaryFile('w', suffix='.json') as tmp:
+        json.dump(title_mapping, tmp)
+        tmp.flush()
+        
+        # Modify grep command to include title lookup
+        grep_cmd = f"""
+        [[ -z {{q}} ]] || {grep} -i -I -H -n -I -l --color=never {{q}} {DIR}/*.md | 
+        while IFS= read -r file; do
+            title=$(jq -r --arg f "$file" '.[$f]' {tmp.name})
+            echo "$file{FZF_DELIMITER}$title"
+        done || :"""
+        
+        fzf_command = [
+            "fzf",
+            "--disabled",
+            "--ansi",
+            "--bind", f"start:reload:{grep_cmd}",
+            "--bind", f"change:reload:{grep_cmd}",
+            "--preview", md_previewer_cmd('{1}'),
+            "--preview-window", "bottom:60%",
+            "--delimiter", FZF_DELIMITER,
+            "--with-nth", "2",
+        ]
+        result = _run(fzf_command, capture_output=True, text=True)
+        return result.stdout.strip() if result.returncode == 0 else None
+
+def run(cmd: Sequence[_PATH], input: str|bytes|None = None, cwd: _PATH|None = None):
+    if isinstance(input, str):
+        input = input.encode()
+    return _run(
+        cmd, input=input, capture_output=True, cwd=cwd
+    ).stdout.decode().strip()
+    
+
+if __name__ == '__main__':
+    sys.exit(_main())
